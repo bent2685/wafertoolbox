@@ -1,0 +1,14 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "wafer-tools",
+  "outputfilename": "wafer-tools",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm run build",
+  "frontend:dev:watcher": "pnpm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "frontend:dir": "./frontend",
+  "author": {
+    "name": "bent2685",
+    "email": "bent2685@outlook.com"
+  }
+}

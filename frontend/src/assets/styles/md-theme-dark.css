@@ -1,0 +1,282 @@
+/* GitHub Dark Markdown 样式 - 使用现有暗色主题变量 */
+
+/* 代码高亮样式 - GitHub Dark Dimmed */
+.hljs {
+  color: #c9d1d9;
+  background: var(--card);
+  padding: 0.5em;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #ff7b72;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #79c0ff;
+}
+
+.hljs-string,
+.hljs-doctag,
+.hljs-formula {
+  color: #a5d6ff;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #d2a8ff;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #ffa657;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #7ee787;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #a5d6ff;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #ffa657;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #ffa657;
+}
+
+.hljs-meta {
+  color: #79c0ff;
+}
+
+.hljs-deletion {
+  color: #ffa198;
+}
+
+.hljs-addition {
+  color: #7ee787;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Markdown 内容样式 */
+.markdown-body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  word-wrap: break-word;
+}
+
+/* 标题样式 */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3em;
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3em;
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-size: 0.875em;
+}
+
+.markdown-body h6 {
+  font-size: 0.85em;
+  color: var(--muted-foreground);
+}
+
+/* 段落和列表 */
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 2em;
+}
+
+.markdown-body li {
+  margin-top: 0.25em;
+}
+
+.markdown-body li > p {
+  margin-top: 16px;
+}
+
+/* 代码块 */
+.markdown-body pre {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.markdown-body code {
+  background-color: var(--accent);
+  border-radius: 6px;
+  font-size: 85%;
+  margin: 0;
+  padding: 0.2em 0.4em;
+  font-family: var(--font-mono);
+  color: var(--foreground);
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  border: 0;
+  display: inherit;
+  line-height: inherit;
+  max-width: inherit;
+  overflow: visible;
+  padding: 0;
+  word-wrap: normal;
+}
+
+/* 引用块 */
+.markdown-body blockquote {
+  border-left: 0.25em solid var(--border);
+  color: var(--muted-foreground);
+  margin: 0 0 16px 0;
+  padding: 0 1em;
+}
+
+.markdown-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* 表格 */
+.markdown-body table {
+  border-collapse: collapse;
+  display: block;
+  margin-bottom: 16px;
+  overflow: auto;
+  width: 100%;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  border: 1px solid var(--border);
+  padding: 6px 13px;
+}
+
+.markdown-body table th {
+  background-color: var(--muted);
+  font-weight: 600;
+}
+
+.markdown-body table tr {
+  background-color: var(--background);
+  border-top: 1px solid var(--border);
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: var(--card);
+}
+
+/* 链接 */
+.markdown-body a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+/* 分隔线 */
+.markdown-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  height: 0;
+  margin: 24px 0;
+}
+
+/* 图片 */
+.markdown-body img {
+  background-color: var(--background);
+  box-sizing: content-box;
+  max-width: 100%;
+}
+
+/* 任务列表 */
+.markdown-body input[type="checkbox"] {
+  margin: 0 0.5em 0.25em -1.6em;
+  vertical-align: middle;
+}
+
+/* 删除线 */
+.markdown-body del {
+  color: var(--muted-foreground);
+}
+
+/* 强调 */
+.markdown-body strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.markdown-body em {
+  color: var(--foreground);
+}

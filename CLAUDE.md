@@ -1,0 +1,1 @@
+Should Allow @AGENTS.md
