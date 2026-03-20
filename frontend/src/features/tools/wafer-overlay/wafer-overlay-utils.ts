@@ -213,6 +213,64 @@ export const buildOverlayWaferMap = (maps: ParsedAoiWaferMap[]): ParsedAoiWaferM
   };
 };
 
+export const buildDiffWaferMap = (
+  leftMap: ParsedAoiWaferMap,
+  rightMap: ParsedAoiWaferMap,
+  options?: {
+    ignoreEmptyMismatch?: boolean;
+  },
+): ParsedAoiWaferMap => {
+  const { ignoreEmptyMismatch = false } = options ?? {};
+  const rowCount = leftMap.rowCount;
+  const colCount = leftMap.colCount;
+  const diffGrid: DieState[][] = [];
+
+  for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+    const row: DieState[] = [];
+    for (let colIndex = 0; colIndex < colCount; colIndex += 1) {
+      const leftState = leftMap.grid[rowIndex][colIndex];
+      const rightState = rightMap.grid[rowIndex][colIndex];
+      if (leftState === "empty" && rightState === "empty") {
+        row.push("empty");
+      } else if (ignoreEmptyMismatch && (leftState === "empty" || rightState === "empty")) {
+        row.push("empty");
+      } else if (leftState === rightState) {
+        row.push("pass");
+      } else {
+        row.push("fail");
+      }
+    }
+    diffGrid.push(row);
+  }
+
+  let sameCount = 0;
+  let diffCount = 0;
+  for (const row of diffGrid) {
+    for (const state of row) {
+      if (state === "pass") {
+        sameCount += 1;
+      } else if (state === "fail") {
+        diffCount += 1;
+      }
+    }
+  }
+
+  const { center, radius } = calculateCenterAndRadius(diffGrid);
+  const comparedCount = sameCount + diffCount;
+  return {
+    ...leftMap,
+    fileName: "aoi-map-diff",
+    device: `${leftMap.device || "-"} vs ${rightMap.device || "-"}`,
+    grid: diffGrid,
+    center,
+    radius,
+    passCount: sameCount,
+    failCount: diffCount,
+    validCount: comparedCount,
+    yieldText: comparedCount > 0 ? (sameCount / comparedCount).toFixed(4) : "0",
+  };
+};
+
 export const validateMapsForOverlay = (
   existingMaps: ParsedAoiWaferMap[],
   incomingMap: ParsedAoiWaferMap,
@@ -234,9 +292,31 @@ export const validateMapsForOverlay = (
   return null;
 };
 
+export const validateMapsForDiff = (
+  leftMap: ParsedAoiWaferMap,
+  rightMap: ParsedAoiWaferMap,
+): string | null => {
+  if (leftMap.waferId !== rightMap.waferId) {
+    return `片号不一致：${leftMap.waferId} / ${rightMap.waferId}`;
+  }
+  if (leftMap.rowCount !== rightMap.rowCount || leftMap.colCount !== rightMap.colCount) {
+    return `矩阵尺寸不一致：${leftMap.rowCount}x${leftMap.colCount} / ${rightMap.rowCount}x${rightMap.colCount}`;
+  }
+  return null;
+};
+
 interface ExportPngOptions {
   fileName?: string;
   maxImageSize?: number;
+  preferWailsExporter?: boolean;
+  requireSavedPath?: boolean;
+  backgroundColor?: string;
+  passColor?: string;
+  failColor?: string;
+  borderColor?: string;
+  axisColor?: string;
+  circleColor?: string;
+  centerColor?: string;
 }
 
 interface WailsBridge {
@@ -254,6 +334,13 @@ interface WailsBridge {
           centerY: number;
           radius: number;
           maxImageSize: number;
+          backgroundColor?: string;
+          passColor?: string;
+          failColor?: string;
+          borderColor?: string;
+          axisColor?: string;
+          circleColor?: string;
+          centerColor?: string;
           passPoints: Array<{ x: number; y: number }>;
           failPoints: Array<{ x: number; y: number }>;
         }) => Promise<string>;
@@ -266,7 +353,66 @@ export const downloadWaferMapPng = async (
   map: ParsedAoiWaferMap,
   options: ExportPngOptions = {},
 ): Promise<string | null> => {
-  const { fileName = `${map.fileName.replace(/\.[^/.]+$/, "")}.png`, maxImageSize = 2400 } = options;
+  const {
+    fileName = `${map.fileName.replace(/\.[^/.]+$/, "")}.png`,
+    maxImageSize = 2400,
+    preferWailsExporter = true,
+    requireSavedPath = false,
+    backgroundColor = "#f4f4f4",
+    passColor = "#22c55e",
+    failColor = "#e54b4f",
+    borderColor = "#dddddd",
+    axisColor = "#737373",
+    circleColor = "#111111",
+    centerColor = "#000000",
+  } = options;
+  const bridge = window as unknown as WailsBridge;
+  const saveWaferPNG = bridge.go?.main?.App?.SaveWaferMapPNG;
+  if (saveWaferPNG && preferWailsExporter) {
+    try {
+      const passPoints: Array<{ x: number; y: number }> = [];
+      const failPoints: Array<{ x: number; y: number }> = [];
+      for (let rowIndex = 0; rowIndex < map.rowCount; rowIndex += 1) {
+        for (let colIndex = 0; colIndex < map.colCount; colIndex += 1) {
+          const state = map.grid[rowIndex][colIndex];
+          if (state === "empty") {
+            continue;
+          }
+          const point = { x: colIndex, y: rowIndex };
+          if (state === "pass") {
+            passPoints.push(point);
+          } else {
+            failPoints.push(point);
+          }
+        }
+      }
+
+      const savedPath = await saveWaferPNG({
+        fileName,
+        rowCount: map.rowCount,
+        colCount: map.colCount,
+        xDies: map.xDies,
+        yDies: map.yDies,
+        centerX: map.center.x,
+        centerY: map.center.y,
+        radius: map.radius,
+        maxImageSize,
+        backgroundColor,
+        passColor,
+        failColor,
+        borderColor,
+        axisColor,
+        circleColor,
+        centerColor,
+        passPoints,
+        failPoints,
+      });
+      return savedPath;
+    } catch {
+      // fallback to canvas mode
+    }
+  }
+
   const paddingCell = 4;
   const cellWRatio = map.xDies > 0 ? map.xDies : 1;
   const cellHRatio = map.yDies > 0 ? map.yDies : 1;
@@ -286,14 +432,7 @@ export const downloadWaferMapPng = async (
     return;
   }
 
-  const bg = "#f4f4f4";
-  const passColor = "#22c55e";
-  const failColor = "#e54b4f";
-  const borderColor = "#dddddd";
-  const axisColor = "#737373";
-  const circleColor = "#111111";
-
-  ctx.fillStyle = bg;
+  ctx.fillStyle = backgroundColor;
   ctx.fillRect(0, 0, width, height);
 
   const centerX = (map.center.x + 0.5 + paddingCell) * cellW;
@@ -336,52 +475,12 @@ export const downloadWaferMapPng = async (
     }
   }
 
-  ctx.fillStyle = "#000000";
+  ctx.fillStyle = centerColor;
   ctx.beginPath();
   ctx.arc(centerX, centerY, Math.max(2, Math.floor(baseScale * 0.3)), 0, Math.PI * 2);
   ctx.fill();
 
   const link = document.createElement("a");
-  const bridge = window as unknown as WailsBridge;
-  const saveWaferPNG = bridge.go?.main?.App?.SaveWaferMapPNG;
-  if (saveWaferPNG) {
-    try {
-      const passPoints: Array<{ x: number; y: number }> = [];
-      const failPoints: Array<{ x: number; y: number }> = [];
-      for (let rowIndex = 0; rowIndex < map.rowCount; rowIndex += 1) {
-        for (let colIndex = 0; colIndex < map.colCount; colIndex += 1) {
-          const state = map.grid[rowIndex][colIndex];
-          if (state === "empty") {
-            continue;
-          }
-          const point = { x: colIndex, y: rowIndex };
-          if (state === "pass") {
-            passPoints.push(point);
-          } else {
-            failPoints.push(point);
-          }
-        }
-      }
-
-      const savedPath = await saveWaferPNG({
-        fileName,
-        rowCount: map.rowCount,
-        colCount: map.colCount,
-        xDies: map.xDies,
-        yDies: map.yDies,
-        centerX: map.center.x,
-        centerY: map.center.y,
-        radius: map.radius,
-        maxImageSize,
-        passPoints,
-        failPoints,
-      });
-      return savedPath;
-    } catch {
-      // fallback to old save mode
-    }
-  }
-
   const dataURL = canvas.toDataURL("image/png");
   const saveToDisk = bridge.go?.main?.App?.SaveBase64Image;
   if (saveToDisk) {
@@ -391,6 +490,10 @@ export const downloadWaferMapPng = async (
     } catch {
       // fallback to browser download mode
     }
+  }
+
+  if (requireSavedPath) {
+    throw new Error("当前环境无法返回保存路径，请在 Wails 客户端中执行下载");
   }
 
   link.href = dataURL;

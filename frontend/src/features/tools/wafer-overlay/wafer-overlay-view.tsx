@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -9,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAppTitle } from "@/components/layout/app-title-context";
-import { Download, FileText, X } from "lucide-react";
+import { Download, FileText, Loader2, X } from "lucide-react";
 import { ClipboardSetText } from "@wailsjs/runtime/runtime";
 import {
   buildOverlayWaferMap,
@@ -118,6 +119,7 @@ const WaferOverlayView: React.FC = () => {
   const [savedPath, setSavedPath] = useState<string>("");
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [copyHint, setCopyHint] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const dragCounter = useRef(0);
   const [draggingFileName, setDraggingFileName] = useState<string | null>(null);
@@ -223,15 +225,26 @@ const WaferOverlayView: React.FC = () => {
   };
 
   const handleDownload = async (map: ParsedAoiWaferMap, fileName: string, maxImageSize: number) => {
+    if (isDownloading) {
+      return;
+    }
+    setIsDownloading(true);
     setError("");
     setCopyHint("");
-    const savedPath = await downloadWaferMapPng(map, { fileName, maxImageSize });
-    if (savedPath) {
-      setNotice(`已保存: ${savedPath}`);
-      setSavedPath(savedPath);
-      setIsSaveDialogOpen(true);
-    } else {
-      setNotice("已触发下载");
+    try {
+      const savedPath = await downloadWaferMapPng(map, { fileName, maxImageSize });
+      if (savedPath) {
+        setNotice(`已保存: ${savedPath}`);
+        setSavedPath(savedPath);
+        setIsSaveDialogOpen(true);
+      } else {
+        setNotice("已触发下载");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "下载失败，请稍后重试");
+      setNotice("");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -340,9 +353,14 @@ const WaferOverlayView: React.FC = () => {
                   size="icon"
                   className="h-7 w-7"
                   title="下载高清图"
+                  disabled={isDownloading}
                   onClick={() => void handleDownload(overlayMap, `overlay-${overlayMap.waferId}.png`, 2800)}
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  {isDownloading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
                 </Button>
               )}
             </div>
@@ -424,6 +442,7 @@ const WaferOverlayView: React.FC = () => {
                       variant="outline"
                       size="sm"
                       className="h-7 text-xs"
+                      disabled={isDownloading}
                       onClick={() =>
                         void handleDownload(
                           map,
@@ -432,8 +451,12 @@ const WaferOverlayView: React.FC = () => {
                         )
                       }
                     >
-                      <Download className="mr-1 h-3.5 w-3.5" />
-                      下载
+                      {isDownloading ? (
+                        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Download className="mr-1 h-3.5 w-3.5" />
+                      )}
+                      {isDownloading ? "下载中..." : "下载"}
                     </Button>
                     <WaferMeta map={map} compact />
                   </div>
@@ -464,7 +487,9 @@ const WaferOverlayView: React.FC = () => {
             <Button variant="outline" onClick={() => void handleCopyPath()}>
               复制路径
             </Button>
-            <Button onClick={() => setIsSaveDialogOpen(false)}>我知道了</Button>
+            <DialogClose asChild>
+              <Button>我知道了</Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

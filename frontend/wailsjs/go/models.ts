@@ -24,6 +24,13 @@ export namespace main {
 	    centerY: number;
 	    radius: number;
 	    maxImageSize: number;
+	    backgroundColor: string;
+	    passColor: string;
+	    failColor: string;
+	    borderColor: string;
+	    axisColor: string;
+	    circleColor: string;
+	    centerColor: string;
 	    passPoints: WaferPoint[];
 	    failPoints: WaferPoint[];
 	
@@ -42,6 +49,13 @@ export namespace main {
 	        this.centerY = source["centerY"];
 	        this.radius = source["radius"];
 	        this.maxImageSize = source["maxImageSize"];
+	        this.backgroundColor = source["backgroundColor"];
+	        this.passColor = source["passColor"];
+	        this.failColor = source["failColor"];
+	        this.borderColor = source["borderColor"];
+	        this.axisColor = source["axisColor"];
+	        this.circleColor = source["circleColor"];
+	        this.centerColor = source["centerColor"];
 	        this.passPoints = this.convertValues(source["passPoints"], WaferPoint);
 	        this.failPoints = this.convertValues(source["failPoints"], WaferPoint);
 	    }

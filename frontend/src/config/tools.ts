@@ -11,6 +11,14 @@ export interface ToolItem {
 
 export const tools: ToolItem[] = [
   {
+    id: "aoi-map-diff",
+    name: "AOI Map Diff",
+    description: "比较两个AOI map，输出wafer差异点",
+    icon: "tabler--zoom-scan",
+    path: "/tools/aoi-map-diff",
+    category: "Wafer工具",
+  },
+  {
     id: "wafer-overlay",
     name: "AOI Wafer叠图",
     description: "解析AOI map并叠加多个wafer结果",

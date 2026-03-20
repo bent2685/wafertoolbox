@@ -107,6 +107,13 @@ type WaferMapExportRequest struct {
 	CenterY     float64     `json:"centerY"`
 	Radius      float64     `json:"radius"`
 	MaxImageSize int        `json:"maxImageSize"`
+	BackgroundColor string  `json:"backgroundColor"`
+	PassColor   string      `json:"passColor"`
+	FailColor   string      `json:"failColor"`
+	BorderColor string      `json:"borderColor"`
+	AxisColor   string      `json:"axisColor"`
+	CircleColor string      `json:"circleColor"`
+	CenterColor string      `json:"centerColor"`
 	PassPoints  []WaferPoint `json:"passPoints"`
 	FailPoints  []WaferPoint `json:"failPoints"`
 }
@@ -114,14 +121,22 @@ type WaferMapExportRequest struct {
 const sixInchWaferDiameterMM = 150.0
 const sixInchWaferRadiusMM = sixInchWaferDiameterMM / 2
 
-func clampToByte(v int) uint8 {
-	if v < 0 {
-		return 0
+func parseHexColor(input string, fallback color.RGBA) color.RGBA {
+	text := strings.TrimSpace(input)
+	if text == "" {
+		return fallback
 	}
-	if v > 255 {
-		return 255
+	if strings.HasPrefix(text, "#") {
+		text = text[1:]
 	}
-	return uint8(v)
+	if len(text) != 6 {
+		return fallback
+	}
+	var r, g, b uint8
+	if _, err := fmt.Sscanf(text, "%02x%02x%02x", &r, &g, &b); err != nil {
+		return fallback
+	}
+	return color.RGBA{R: r, G: g, B: b, A: 255}
 }
 
 func drawLine(img *image.RGBA, x0, y0, x1, y1 int, c color.Color) {
@@ -196,12 +211,13 @@ func (a *App) SaveWaferMapPNG(req WaferMapExportRequest) (string, error) {
 	)
 	cellW := baseScale * cellWRatio
 	cellH := baseScale * cellHRatio
-	bg := color.RGBA{R: 244, G: 244, B: 244, A: 255}
-	passColor := color.RGBA{R: 34, G: 197, B: 94, A: 255}
-	failColor := color.RGBA{R: 229, G: 75, B: 79, A: 255}
-	borderColor := color.RGBA{R: 188, G: 211, B: 194, A: 255}
-	axisColor := color.RGBA{R: 115, G: 115, B: 115, A: 255}
-	circleColor := color.RGBA{R: 17, G: 17, B: 17, A: 160}
+	bg := parseHexColor(req.BackgroundColor, color.RGBA{R: 244, G: 244, B: 244, A: 255})
+	passColor := parseHexColor(req.PassColor, color.RGBA{R: 34, G: 197, B: 94, A: 255})
+	failColor := parseHexColor(req.FailColor, color.RGBA{R: 229, G: 75, B: 79, A: 255})
+	borderColor := parseHexColor(req.BorderColor, color.RGBA{R: 188, G: 211, B: 194, A: 255})
+	axisColor := parseHexColor(req.AxisColor, color.RGBA{R: 115, G: 115, B: 115, A: 255})
+	circleColor := parseHexColor(req.CircleColor, color.RGBA{R: 17, G: 17, B: 17, A: 255})
+	centerColor := parseHexColor(req.CenterColor, color.RGBA{R: 0, G: 0, B: 0, A: 255})
 
 	minCol := req.ColCount
 	maxCol := -1
@@ -314,7 +330,7 @@ func (a *App) SaveWaferMapPNG(req WaferMapExportRequest) (string, error) {
 	for py := int(centerY) - 2; py <= int(centerY)+2; py++ {
 		for px := int(centerX) - 2; px <= int(centerX)+2; px++ {
 			if image.Pt(px, py).In(img.Rect) {
-				img.Set(px, py, color.RGBA{R: clampToByte(0), G: clampToByte(0), B: clampToByte(0), A: 255})
+				img.Set(px, py, centerColor)
 			}
 		}
 	}

@@ -4,18 +4,33 @@ import { cn } from "@/lib/utils";
 interface WaferMapSvgProps {
   map: ParsedAoiWaferMap;
   className?: string;
+  palette?: WaferMapSvgPalette;
 }
 
-const PASS_FILL = "var(--success)";
-const FAIL_FILL = "var(--destructive)";
-const BORDER_COLOR = "var(--border)";
-const AXIS_COLOR = "var(--muted-foreground)";
-const CIRCLE_COLOR = "var(--primary)";
-const CENTER_COLOR = "var(--accent-foreground)";
+export interface WaferMapSvgPalette {
+  passFill?: string;
+  failFill?: string;
+  backgroundFill?: string;
+  borderStroke?: string;
+  axisStroke?: string;
+  circleStroke?: string;
+  centerFill?: string;
+}
+
+const DEFAULT_PALETTE: Required<WaferMapSvgPalette> = {
+  passFill: "var(--success)",
+  failFill: "var(--destructive)",
+  backgroundFill: "var(--background)",
+  borderStroke: "var(--border)",
+  axisStroke: "var(--muted-foreground)",
+  circleStroke: "var(--primary)",
+  centerFill: "var(--accent-foreground)",
+};
 const SIX_INCH_WAFER_DIAMETER_MM = 150;
 const SIX_INCH_WAFER_RADIUS_MM = SIX_INCH_WAFER_DIAMETER_MM / 2;
 
-export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
+export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className, palette }) => {
+  const colors = { ...DEFAULT_PALETTE, ...palette };
   const paddingCell = 2;
   const mmPadding = 2;
   const cellW = map.xDies > 0 ? map.xDies : 1;
@@ -76,7 +91,7 @@ export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
           y={0}
           width={viewW}
           height={viewH}
-          fill="var(--background)"
+          fill={colors.backgroundFill}
         />
 
         {map.grid.map((row, rowIndex) =>
@@ -84,7 +99,7 @@ export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
             if (state === "empty") {
               return null;
             }
-            const fillColor = state === "pass" ? PASS_FILL : FAIL_FILL;
+            const fillColor = state === "pass" ? colors.passFill : colors.failFill;
             return (
               <rect
                 key={`${rowIndex}-${colIndex}`}
@@ -93,7 +108,7 @@ export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
                 width={cellW}
                 height={cellH}
                 fill={fillColor}
-                stroke={BORDER_COLOR}
+                stroke={colors.borderStroke}
                 strokeWidth={0.04}
               />
             );
@@ -105,7 +120,7 @@ export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
           y1={centerY}
           x2={viewW}
           y2={centerY}
-          stroke={AXIS_COLOR}
+          stroke={colors.axisStroke}
           strokeWidth={0.4}
           strokeDasharray="1 1"
         />
@@ -114,7 +129,7 @@ export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
           y1={0}
           x2={centerX}
           y2={viewH}
-          stroke={AXIS_COLOR}
+          stroke={colors.axisStroke}
           strokeWidth={0.4}
           strokeDasharray="1 1"
         />
@@ -125,12 +140,12 @@ export const WaferMapSvg: React.FC<WaferMapSvgProps> = ({ map, className }) => {
           rx={waferRadius}
           ry={waferRadius}
           fill="none"
-          stroke={CIRCLE_COLOR}
+          stroke={colors.circleStroke}
           strokeOpacity={0.7}
           strokeWidth={0.65}
         />
 
-        <circle cx={centerX} cy={centerY} r={0.5} fill={CENTER_COLOR} />
+        <circle cx={centerX} cy={centerY} r={0.5} fill={colors.centerFill} />
       </svg>
     </div>
   );

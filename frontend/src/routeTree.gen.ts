@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsWaferOverlayRouteImport } from './routes/tools.wafer-overlay'
 import { Route as ToolsTestPointAnalyzerRouteImport } from './routes/tools.test-point-analyzer'
+import { Route as ToolsAoiMapDiffRouteImport } from './routes/tools.aoi-map-diff'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,33 +29,55 @@ const ToolsTestPointAnalyzerRoute = ToolsTestPointAnalyzerRouteImport.update({
   path: '/tools/test-point-analyzer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsAoiMapDiffRoute = ToolsAoiMapDiffRouteImport.update({
+  id: '/tools/aoi-map-diff',
+  path: '/tools/aoi-map-diff',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/tools/aoi-map-diff': typeof ToolsAoiMapDiffRoute
   '/tools/test-point-analyzer': typeof ToolsTestPointAnalyzerRoute
   '/tools/wafer-overlay': typeof ToolsWaferOverlayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/tools/aoi-map-diff': typeof ToolsAoiMapDiffRoute
   '/tools/test-point-analyzer': typeof ToolsTestPointAnalyzerRoute
   '/tools/wafer-overlay': typeof ToolsWaferOverlayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/tools/aoi-map-diff': typeof ToolsAoiMapDiffRoute
   '/tools/test-point-analyzer': typeof ToolsTestPointAnalyzerRoute
   '/tools/wafer-overlay': typeof ToolsWaferOverlayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tools/test-point-analyzer' | '/tools/wafer-overlay'
+  fullPaths:
+    | '/'
+    | '/tools/aoi-map-diff'
+    | '/tools/test-point-analyzer'
+    | '/tools/wafer-overlay'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tools/test-point-analyzer' | '/tools/wafer-overlay'
-  id: '__root__' | '/' | '/tools/test-point-analyzer' | '/tools/wafer-overlay'
+  to:
+    | '/'
+    | '/tools/aoi-map-diff'
+    | '/tools/test-point-analyzer'
+    | '/tools/wafer-overlay'
+  id:
+    | '__root__'
+    | '/'
+    | '/tools/aoi-map-diff'
+    | '/tools/test-point-analyzer'
+    | '/tools/wafer-overlay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ToolsAoiMapDiffRoute: typeof ToolsAoiMapDiffRoute
   ToolsTestPointAnalyzerRoute: typeof ToolsTestPointAnalyzerRoute
   ToolsWaferOverlayRoute: typeof ToolsWaferOverlayRoute
 }
@@ -82,11 +105,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsTestPointAnalyzerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/aoi-map-diff': {
+      id: '/tools/aoi-map-diff'
+      path: '/tools/aoi-map-diff'
+      fullPath: '/tools/aoi-map-diff'
+      preLoaderRoute: typeof ToolsAoiMapDiffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ToolsAoiMapDiffRoute: ToolsAoiMapDiffRoute,
   ToolsTestPointAnalyzerRoute: ToolsTestPointAnalyzerRoute,
   ToolsWaferOverlayRoute: ToolsWaferOverlayRoute,
 }
