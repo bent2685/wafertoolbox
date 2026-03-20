@@ -39,12 +39,14 @@ export const MainLayout = () => {
   useEffect(() => {
     Environment().then((env) => {
       setIsWindows(env.platform === "windows");
+      document.documentElement.classList.toggle("platform-mac", env.platform === "darwin");
+      document.documentElement.classList.toggle("platform-windows", env.platform === "windows");
     });
   }, []);
 
   return (
     <AppTitleProvider>
-      <div className="relative flex h-screen w-screen bg-background/20">
+      <div className={`relative flex h-screen w-screen ${isWindows ? "bg-background" : "bg-background/20"}`}>
         {/* Sidebar */}
         <aside
           className={`flex h-full w-52 flex-col text-sidebar-foreground select-none ${
@@ -59,8 +61,14 @@ export const MainLayout = () => {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full overflow-auto p-1.5">
-          <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm backdrop-blur-md">
+        <main className={`flex-1 w-full overflow-auto ${isWindows ? "p-0" : "p-1.5"}`}>
+          <div
+            className={`flex h-full flex-col overflow-hidden bg-background ${
+              isWindows
+                ? "rounded-none border-0 shadow-none"
+                : "rounded-xl border border-border shadow-sm backdrop-blur-md"
+            }`}
+          >
             <TitleBar />
             <section className="min-h-0 flex-1 overflow-auto">
               <Outlet />

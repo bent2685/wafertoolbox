@@ -7,14 +7,20 @@
     prefixes: tabler, lucide;
 }
 
-/* Transparent background for Wails glass effect on macOS */
+/* Default solid background to avoid dark edge artifacts on Windows frameless windows. */
 body {
-    background-color: transparent;
+    background-color: var(--background);
 }
 
 #root {
     width: 100vw;
     height: 100vh;
+    background-color: var(--background);
+}
+
+/* Keep glass/transparent behavior only on macOS. */
+html.platform-mac body,
+html.platform-mac #root {
     background-color: transparent;
 }
 
