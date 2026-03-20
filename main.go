@@ -15,6 +15,7 @@ var assets embed.FS
 var appContext context.Context
 
 func main() {
+	app := NewApp()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -31,8 +32,11 @@ func main() {
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
 			appContext = ctx
+			app.startup(ctx)
 		},
-		Bind: []interface{}{},
+		Bind: []interface{}{
+			app,
+		},
 		Mac:     getMacOptions(),
 		Windows: getWindowsOptions(),
 	})

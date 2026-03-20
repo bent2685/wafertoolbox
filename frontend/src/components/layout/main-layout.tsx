@@ -4,6 +4,8 @@ import { Environment } from "@wailsjs/runtime/runtime";
 import { AppTitleProvider } from "./app-title-context";
 import { BaseSidebar } from "./sidebar-content/base-sidebar";
 import { TitleBar } from "./title-bar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const SidebarHeader = () => {
   const [isMac, setIsMac] = useState(false);
@@ -30,6 +32,9 @@ const SidebarHeader = () => {
 
 export const MainLayout = () => {
   const [isWindows, setIsWindows] = useState(false);
+  const [password, setPassword] = useState("");
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     Environment().then((env) => {
@@ -39,7 +44,7 @@ export const MainLayout = () => {
 
   return (
     <AppTitleProvider>
-      <div className="flex h-screen w-screen bg-background/20">
+      <div className="relative flex h-screen w-screen bg-background/20">
         {/* Sidebar */}
         <aside
           className={`flex h-full w-52 flex-col text-sidebar-foreground select-none ${
@@ -62,6 +67,41 @@ export const MainLayout = () => {
             </section>
           </div>
         </main>
+
+        {!isUnlocked && (
+          <div className="absolute inset-0 z-[120] flex items-center justify-center bg-background/90 backdrop-blur-sm">
+            <div className="w-full max-w-sm rounded-xl border border-border bg-card p-5 shadow-lg">
+              <div className="mb-3 text-lg font-semibold text-foreground">登录验证</div>
+              <div className="mb-3 text-sm text-muted-foreground">
+                请输入访问密码继续使用系统
+              </div>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (password === "starshine") {
+                    setIsUnlocked(true);
+                    setAuthError("");
+                    return;
+                  }
+                  setAuthError("密码错误");
+                }}
+                className="space-y-3"
+              >
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="请输入密码"
+                  autoFocus
+                />
+                {authError && <div className="text-xs text-destructive">{authError}</div>}
+                <Button type="submit" className="w-full">
+                  进入系统
+                </Button>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </AppTitleProvider>
   );

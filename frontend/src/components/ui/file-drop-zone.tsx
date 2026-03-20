@@ -10,7 +10,7 @@ export interface FileDropZoneProps extends React.HTMLAttributes<HTMLDivElement> 
   /** Maximum number of files allowed */
   maxFiles?: number;
   /** Currently uploaded files */
-  uploadedFiles?: File[];
+  uploadedFiles?: Array<{ name: string }>;
 }
 
 const FileDropZone = React.forwardRef<HTMLDivElement, FileDropZoneProps>(

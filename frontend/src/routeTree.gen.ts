@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ToolsWaferOverlayRouteImport } from './routes/tools.wafer-overlay'
 import { Route as ToolsTestPointAnalyzerRouteImport } from './routes/tools.test-point-analyzer'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsWaferOverlayRoute = ToolsWaferOverlayRouteImport.update({
+  id: '/tools/wafer-overlay',
+  path: '/tools/wafer-overlay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsTestPointAnalyzerRoute = ToolsTestPointAnalyzerRouteImport.update({
@@ -26,27 +32,31 @@ const ToolsTestPointAnalyzerRoute = ToolsTestPointAnalyzerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tools/test-point-analyzer': typeof ToolsTestPointAnalyzerRoute
+  '/tools/wafer-overlay': typeof ToolsWaferOverlayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/tools/test-point-analyzer': typeof ToolsTestPointAnalyzerRoute
+  '/tools/wafer-overlay': typeof ToolsWaferOverlayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/tools/test-point-analyzer': typeof ToolsTestPointAnalyzerRoute
+  '/tools/wafer-overlay': typeof ToolsWaferOverlayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tools/test-point-analyzer'
+  fullPaths: '/' | '/tools/test-point-analyzer' | '/tools/wafer-overlay'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tools/test-point-analyzer'
-  id: '__root__' | '/' | '/tools/test-point-analyzer'
+  to: '/' | '/tools/test-point-analyzer' | '/tools/wafer-overlay'
+  id: '__root__' | '/' | '/tools/test-point-analyzer' | '/tools/wafer-overlay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ToolsTestPointAnalyzerRoute: typeof ToolsTestPointAnalyzerRoute
+  ToolsWaferOverlayRoute: typeof ToolsWaferOverlayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/wafer-overlay': {
+      id: '/tools/wafer-overlay'
+      path: '/tools/wafer-overlay'
+      fullPath: '/tools/wafer-overlay'
+      preLoaderRoute: typeof ToolsWaferOverlayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/test-point-analyzer': {
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ToolsTestPointAnalyzerRoute: ToolsTestPointAnalyzerRoute,
+  ToolsWaferOverlayRoute: ToolsWaferOverlayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
