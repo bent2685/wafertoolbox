@@ -9,3 +9,7 @@ export function SaveBase64Image(arg1, arg2) {
 export function SaveWaferMapPNG(arg1) {
   return window['go']['main']['App']['SaveWaferMapPNG'](arg1);
 }
+
+export function SetAppearance(arg1) {
+  return window['go']['main']['App']['SetAppearance'](arg1);
+}

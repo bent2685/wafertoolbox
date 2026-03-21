@@ -9,6 +9,8 @@ import (
 
 func getMacOptions() *mac.Options {
 	return &mac.Options{
+		Appearance: mac.DefaultAppearance,
+
 		TitleBar: &mac.TitleBar{
 			TitlebarAppearsTransparent: true,
 			HideTitle:                  true,

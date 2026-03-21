@@ -12,6 +12,7 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+
 var appContext context.Context
 
 func main() {
@@ -29,7 +30,6 @@ func main() {
 		Debug: options.Debug{
 			OpenInspectorOnStartup: true,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
 			appContext = ctx
 			app.startup(ctx)
