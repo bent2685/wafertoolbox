@@ -5,3 +5,5 @@ import {main} from '../models';
 export function SaveBase64Image(arg1:string,arg2:string):Promise<string>;
 
 export function SaveWaferMapPNG(arg1:main.WaferMapExportRequest):Promise<string>;
+
+export function SetAppearance(arg1:string):Promise<void>;
