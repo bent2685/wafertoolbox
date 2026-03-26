@@ -67,7 +67,7 @@ html {
     --success: rgb(34, 197, 94);
     --success-foreground: rgb(255, 255, 255);
     --wafer-diff-same: rgb(255, 255, 255);
-    --wafer-diff-diff: rgb(255, 138, 0);
+    --wafer-diff-diff: rgb(37, 99, 235);
     --border: rgb(228, 228, 228);
     --input: rgb(235, 235, 235);
     --ring: rgb(0, 0, 0);
@@ -136,7 +136,7 @@ html {
     --success: rgb(74, 222, 128);
     --success-foreground: rgb(0, 0, 0);
     --wafer-diff-same: rgb(255, 255, 255);
-    --wafer-diff-diff: rgb(255, 158, 48);
+    --wafer-diff-diff: rgb(96, 165, 250);
     --border: rgb(36, 36, 36);
     --input: rgb(51, 51, 51);
     --ring: rgb(164, 164, 164);

@@ -73,7 +73,7 @@ const navItemClasses =
   "flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
 
 const activeNavClasses =
-  "bg-primary text-primary-foreground font-medium shadow-sm";
+  "bg-chart-2 text-white font-medium shadow-sm";
 
 const inactiveNavClasses = "text-sidebar-foreground/80";
 
@@ -118,7 +118,12 @@ export const BaseSidebar = () => {
               isHomeActive ? activeNavClasses : inactiveNavClasses,
             )}
           >
-            <span className="iconify lucide--home w-4 h-4 shrink-0 text-primary" />
+            <span
+              className={cn(
+                "iconify lucide--home w-4 h-4 shrink-0",
+                isHomeActive ? "text-white" : "text-primary",
+              )}
+            />
             <span>首页</span>
           </Link>
 

@@ -494,9 +494,6 @@ const WaferOverlayView: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="shrink-0 pb-1 text-center text-xs text-muted-foreground">
-        power by starshine it
-      </div>
     </div>
   );
 };
