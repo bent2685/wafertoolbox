@@ -20,7 +20,7 @@ export const tools: ToolItem[] = [
   },
   {
     id: "wafer-overlay",
-    name: "AOI Wafer叠图",
+    name: "AOI Wafer Overlay",
     description: "解析AOI map并叠加多个wafer结果",
     icon: "tabler--target-arrow",
     path: "/tools/wafer-overlay",
