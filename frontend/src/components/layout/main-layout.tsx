@@ -18,11 +18,11 @@ const SidebarHeader = () => {
 
   return (
     <div
-      className={`flex items-center justify-between px-3 ${isMac ? "mt-8" : "mt-3"} pb-3 shrink-0 z-100`}
+      className={`z-100 shrink-0 border-b border-sidebar-border/80 px-3 pb-3 ${isMac ? "mt-8" : "mt-3"} flex items-center justify-between`}
     >
       <div className="flex items-center gap-2">
-        <span className="iconify lucide--tool-case w-5 h-5 text-sidebar-foreground" />
-        <span className="text-sm font-bold text-sidebar-foreground">
+        <span className="iconify lucide--tool-case h-5 w-5 text-primary" />
+        <span className="text-sm font-semibold tracking-wide text-sidebar-foreground">
           Waferbox
         </span>
       </div>
@@ -60,14 +60,14 @@ export const MainLayout = () => {
 
   return (
     <AppTitleProvider>
-      <div
-        className={`relative flex h-screen w-screen ${isWindows ? "bg-background" : ""}`}
-      >
+      <div className="relative flex h-screen w-screen bg-background">
         {/* Sidebar */}
         <aside
-          className={`flex h-full w-52 flex-col text-sidebar-foreground select-none ${
-            isWindows ? "border-r border-sidebar-border bg-sidebar" : "bg-red"
-          }`}
+          className={`
+            flex h-full w-56 shrink-0 flex-col select-none text-sidebar-foreground
+            border-r border-sidebar-border bg-sidebar
+            ${isWindows ? "" : "backdrop-blur-sm"}
+          `}
         >
           {/* Header with Navigation Buttons */}
           <SidebarHeader />
@@ -77,12 +77,10 @@ export const MainLayout = () => {
         </aside>
 
         {/* Main Content Area */}
-        <main
-          className={`flex-1 bg-background w-full overflow-auto p-0 rounded-l-xl`}
-        >
-          <div className={`flex h-full flex-col overflow-hidden`}>
+        <main className="flex-1 overflow-hidden bg-background">
+          <div className="flex h-full flex-col overflow-hidden">
             <TitleBar />
-            <section className="min-h-0 flex-1 overflow-auto">
+            <section className="min-h-0 flex-1 overflow-auto bg-muted/30">
               <Outlet />
             </section>
           </div>

@@ -22,7 +22,7 @@ const SettingsPopover = () => {
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           <span className="iconify lucide--settings w-4 h-4 shrink-0" />
           <span>设置</span>
@@ -70,12 +70,32 @@ const SettingsPopover = () => {
 
 // Base nav item styles
 const navItemClasses =
-  "flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
+  "flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
 
 const activeNavClasses =
-  "bg-primary/85 text-primary-foreground font-medium shadow-sm backdrop-blur-sm";
+  "bg-primary text-primary-foreground font-medium shadow-sm";
 
 const inactiveNavClasses = "text-sidebar-foreground/80";
+
+const getSidebarIconTheme = (toolId: string) => {
+  switch (toolId) {
+    case "aoi-map-diff":
+      return {
+        box: "bg-chart-2/20",
+        icon: "text-chart-2",
+      };
+    case "wafer-overlay":
+      return {
+        box: "bg-chart-1/20",
+        icon: "text-chart-1",
+      };
+    default:
+      return {
+        box: "bg-primary/10",
+        icon: "text-primary",
+      };
+  }
+};
 
 export const BaseSidebar = () => {
   const routerState = useRouterState();
@@ -87,7 +107,7 @@ export const BaseSidebar = () => {
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Tools List */}
-      <nav className="flex-1 overflow-y-auto px-2 py-2">
+      <nav className="flex-1 overflow-y-auto px-2.5 py-3">
         <div className="space-y-0.5">
           {/* Home Entry */}
           <Link
@@ -98,14 +118,15 @@ export const BaseSidebar = () => {
               isHomeActive ? activeNavClasses : inactiveNavClasses,
             )}
           >
-            <span className="iconify lucide--home w-4 h-4 shrink-0" />
+            <span className="iconify lucide--home w-4 h-4 shrink-0 text-primary" />
             <span>首页</span>
           </Link>
 
           {/* Divider */}
-          <div className="my-2 border-t border-sidebar-border" />
+          <div className="my-2 border-t border-sidebar-border/80" />
           {tools.map((tool) => {
             const isActive = currentPath === tool.path;
+            const iconTheme = getSidebarIconTheme(tool.id);
             return (
               <Link
                 key={tool.id}
@@ -117,8 +138,19 @@ export const BaseSidebar = () => {
                 )}
               >
                 <span
-                  className={cn("iconify", tool.icon, "w-4 h-4 shrink-0")}
-                />
+                  className={cn(
+                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-sm",
+                    isActive ? "bg-primary-foreground/20" : iconTheme.box,
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "iconify w-3.5 h-3.5",
+                      tool.icon,
+                      isActive ? "text-primary-foreground" : iconTheme.icon,
+                    )}
+                  />
+                </span>
                 <span className="truncate">{tool.name}</span>
               </Link>
             );

@@ -26,12 +26,4 @@ export const tools: ToolItem[] = [
     path: "/tools/wafer-overlay",
     category: "Wafer工具",
   },
-  {
-    id: "test-point-analyzer",
-    name: "测试点分析",
-    description: "分析PCB测试点位置和覆盖率",
-    icon: "tabler--scan",
-    path: "/tools/test-point-analyzer",
-    category: "PCB工具",
-  },
 ];
