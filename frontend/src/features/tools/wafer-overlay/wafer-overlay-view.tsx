@@ -109,7 +109,7 @@ const OverlaySummary: React.FC<{ map: ParsedAoiWaferMap; fileCount: number }> = 
 
 const WaferOverlayView: React.FC = () => {
   useAppTitle({
-    title: "AOI Wafer 叠图",
+    title: "AOI Wafer Overlay",
   });
 
   const [maps, setMaps] = useState<ParsedAoiWaferMap[]>([]);
@@ -494,9 +494,6 @@ const WaferOverlayView: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="shrink-0 pb-1 text-center text-xs text-muted-foreground">
-        power by starshine it
-      </div>
     </div>
   );
 };

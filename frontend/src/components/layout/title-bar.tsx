@@ -15,11 +15,11 @@ export const TitleBar = () => {
 
   return (
     <header
-      className={`drag-el flex h-12 shrink-0 items-center justify-between border-b border-border/80 bg-background/70 backdrop-blur-sm ${
-        isWindows ? "pr-0" : "px-4"
+      className={`drag-el flex h-12 shrink-0 items-center justify-between border-b border-border/80 bg-background/90 backdrop-blur-sm ${
+        isWindows ? "pr-0 pl-4" : "px-5"
       }`}
     >
-      <div className={`truncate text-sm font-semibold text-foreground ${isWindows ? "pl-4" : ""}`}>
+      <div className="truncate text-sm font-semibold tracking-wide text-foreground">
         {title ?? "Wafer 工具箱"}
       </div>
 

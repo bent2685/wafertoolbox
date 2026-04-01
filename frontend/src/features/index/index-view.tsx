@@ -3,6 +3,26 @@ import { useAppTitle } from "@/components/layout/app-title-context";
 import { tools } from "@/config/tools";
 import { cn } from "@/lib/utils";
 
+const getToolIconTheme = (toolId: string) => {
+  switch (toolId) {
+    case "aoi-map-diff":
+      return {
+        box: "bg-chart-2/15 group-hover:bg-chart-2/25",
+        icon: "text-chart-2",
+      };
+    case "wafer-overlay":
+      return {
+        box: "bg-chart-1/15 group-hover:bg-chart-1/25",
+        icon: "text-chart-1",
+      };
+    default:
+      return {
+        box: "bg-primary/10 group-hover:bg-primary/20",
+        icon: "text-primary",
+      };
+  }
+};
+
 const IndexView: React.FC = () => {
   useAppTitle({
     title: "首页",
@@ -59,15 +79,49 @@ const IndexView: React.FC = () => {
                 </span>
               </div>
             )}
-          </Link>
-        ))}
+            <div className="relative z-10 mt-6 flex items-start gap-3">
+              <div
+                className={cn(
+                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-md transition-colors",
+                  iconTheme.box,
+                )}
+              >
+                <span
+                  className={cn("iconify h-6 w-6", tool.icon, iconTheme.icon)}
+                />
+              </div>
+              <div className="min-w-0 pt-1">
+                <h3 className="whitespace-nowrap text-sm font-medium text-card-foreground group-hover:text-foreground">
+                  {tool.name}
+                </h3>
+              </div>
+            </div>
+
+            <p className="relative z-10 mt-5 line-clamp-2 text-xs leading-5 text-muted-foreground">
+              {tool.description}
+            </p>
+
+            <div className="relative z-10 mt-auto flex items-end justify-between pt-5">
+              {tool.category && (
+                <div>
+                  <span className="inline-flex items-center rounded bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                    {tool.category}
+                  </span>
+                </div>
+              )}
+              <div className="text-[11px] font-medium tracking-[0.08em] text-muted-foreground/90">
+                DESIGN BY IT
+              </div>
+            </div>
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Empty State */}
       {tools.length === 0 && (
         <div className="flex-1 flex items-center justify-center relative z-10 animate-fade-in-up">
           <div className="text-center">
-            <span className="iconify lucide--tool-case w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <span className="iconify lucide--tool-case mx-auto mb-3 h-12 w-12 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">暂无工具</p>
           </div>
         </div>

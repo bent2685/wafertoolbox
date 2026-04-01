@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogClose,
@@ -22,7 +23,7 @@ import {
 import { WaferMapSvg } from "../wafer-overlay/wafer-map-svg";
 
 const WaferDiffView: React.FC = () => {
-  useAppTitle({ title: "AOI Map Diff" });
+  useAppTitle({ title: "AOI Map Gap" });
 
   const [diffMode, setDiffMode] = useState<"strict" | "ignore-empty">("strict");
   const [showSame, setShowSame] = useState(true);
@@ -53,7 +54,7 @@ const WaferDiffView: React.FC = () => {
     if (maps.length !== 2) {
       return;
     }
-    setNotice(`已按${diffMode === "strict" ? "严格模式" : "忽略空位差异"}重新计算`);
+    setNotice(`已按${diffMode === "strict" ? "严格模式" : "忽略空位 Gap"}重新计算`);
   }, [diffMode, maps.length]);
 
   useEffect(() => {
@@ -195,7 +196,7 @@ const WaferDiffView: React.FC = () => {
         if (nextMaps.length === 1) {
           const mismatch = validateMapsForDiff(nextMaps[0], map);
           if (mismatch) {
-            throw new Error(`${map.fileName} 无法参与差异对比，${mismatch}`);
+            throw new Error(`${map.fileName} 无法参与 Gap 对比，${mismatch}`);
           }
         }
 
@@ -204,7 +205,7 @@ const WaferDiffView: React.FC = () => {
 
       setMaps(nextMaps);
       if (nextMaps.length === 2) {
-        setNotice("已生成 AOI 差异图");
+        setNotice("已生成 AOI Gap 图");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "解析失败，请检查文件格式");
@@ -297,12 +298,12 @@ const WaferDiffView: React.FC = () => {
 
     try {
       const saved = await downloadWaferMapPng(diffMap, {
-        fileName: `aoi-map-diff-${diffMap.waferId}.png`,
+        fileName: `aoi-map-gap-${diffMap.waferId}.png`,
         maxImageSize: 2800,
         requireSavedPath: true,
         backgroundColor: "#f4f4f4",
         passColor: "#ffffff",
-        failColor: "#ff8a00",
+        failColor: "#2563eb",
         borderColor: "#d9d9d9",
         axisColor: "#737373",
         circleColor: "#111111",
@@ -357,7 +358,7 @@ const WaferDiffView: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `aoi-map-diff-points-${maps[0].waferId}.txt`;
+    link.download = `aoi-map-gap-points-${maps[0].waferId}.txt`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -380,14 +381,18 @@ const WaferDiffView: React.FC = () => {
       {isDragOver && (
         <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center rounded-xl border-2 border-dashed border-primary bg-background/85">
           <div className="rounded-md border border-input bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm">
-            松开鼠标，开始生成 AOI 差异图
+            松开鼠标，开始生成 AOI Gap 图
           </div>
         </div>
       )}
 
       <div className="shrink-0 rounded-lg border border-input bg-card p-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" className="h-8" onClick={() => fileInputRef.current?.click()}>
+          <Button
+            size="sm"
+            className="h-8 border border-chart-2/30 bg-chart-2 text-white hover:bg-chart-2/90"
+            onClick={() => fileInputRef.current?.click()}
+          >
             <Upload className="mr-1.5 h-3.5 w-3.5" />
             上传 AOI txt
           </Button>
@@ -401,7 +406,7 @@ const WaferDiffView: React.FC = () => {
           />
 
           <div className="text-xs text-muted-foreground">
-            仅支持 2 个文件，上传后自动生成六寸 wafer 差异图
+            仅支持 2 个文件，上传后自动生成六寸 wafer Gap 图
           </div>
 
           {maps.length > 0 && (
@@ -417,13 +422,18 @@ const WaferDiffView: React.FC = () => {
         </div>
 
         <div className="mt-3 rounded-md border border-input bg-background p-2">
-          <div className="mb-2 text-xs text-muted-foreground">差异规则</div>
+          <div className="mb-2 text-xs text-muted-foreground">Gap 规则</div>
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               size="sm"
               variant={diffMode === "strict" ? "default" : "outline"}
-              className="h-7 text-xs"
+              className={cn(
+                "h-7 text-xs",
+                diffMode === "strict"
+                  ? "border border-chart-2/30 bg-chart-2 text-white hover:bg-chart-2/90"
+                  : "border-chart-2/30 text-chart-2 hover:bg-chart-2/12 hover:text-chart-2",
+              )}
               disabled={isRecomputing}
               onClick={() => {
                 if (diffMode === "strict") {
@@ -438,7 +448,12 @@ const WaferDiffView: React.FC = () => {
               type="button"
               size="sm"
               variant={diffMode === "ignore-empty" ? "default" : "outline"}
-              className="h-7 text-xs"
+              className={cn(
+                "h-7 text-xs",
+                diffMode === "ignore-empty"
+                  ? "border border-chart-2/30 bg-chart-2 text-white hover:bg-chart-2/90"
+                  : "border-chart-2/30 text-chart-2 hover:bg-chart-2/12 hover:text-chart-2",
+              )}
               disabled={isRecomputing}
               onClick={() => {
                 if (diffMode === "ignore-empty") {
@@ -447,12 +462,12 @@ const WaferDiffView: React.FC = () => {
                 runRecompute(() => setDiffMode("ignore-empty"));
               }}
             >
-              忽略空位差异
+              忽略空位 Gap
             </Button>
             <div className="self-center text-xs text-muted-foreground">
               {diffMode === "strict"
-                ? "任一位置状态不同即判定为差异"
-                : "若任一侧为空位则不计入差异"}
+                ? "任一位置状态不同即判定为 Gap"
+                : "若任一侧为空位则不计入 Gap"}
             </div>
           </div>
         </div>
@@ -502,12 +517,12 @@ const WaferDiffView: React.FC = () => {
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex min-h-0 flex-col rounded-xl border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">Wafer 差异图</h3>
+            <h3 className="text-sm font-semibold text-foreground">Wafer Gap 图</h3>
             <Button
               variant="outline"
               size="icon"
               className="h-7 w-7"
-              title="下载差异图"
+              title="下载 Gap 图"
               onClick={() => void handleDownload()}
               disabled={!diffMap || isDownloading}
             >
@@ -559,16 +574,16 @@ const WaferDiffView: React.FC = () => {
                       ? "border-input bg-background text-foreground"
                       : "border-input bg-muted text-muted-foreground"
                   }`}
-                  title="显示/隐藏差异点"
+                  title="显示/隐藏 Gap 点"
                 >
                   <span
                     className={`inline-block h-3 w-3 rounded-sm border border-input ${
                       showDiff ? "bg-[var(--wafer-diff-diff)]" : "bg-muted"
                     }`}
                   />
-                  <span>差异</span>
+                  <span>Gap</span>
                 </button>
-                <div className="text-muted-foreground">白色=无差异，橘色=差异点</div>
+                <div className="text-muted-foreground">白色=无Gap，蓝色=Gap点</div>
               </div>
               <div className="relative min-h-0 flex-1">
                 <WaferMapSvg
@@ -595,13 +610,13 @@ const WaferDiffView: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-              上传 2 个 AOI txt 后自动生成差异图
+              上传 2 个 AOI txt 后自动生成 Gap 图
             </div>
           )}
         </div>
 
         <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-4">
-          <h3 className="mb-3 text-sm font-semibold text-foreground">差异统计</h3>
+          <h3 className="mb-3 text-sm font-semibold text-foreground">Gap 统计</h3>
           {diffMap ? (
             <div className="hide-scrollbar min-h-0 flex-1 space-y-3 overflow-auto pr-1">
               <div className="rounded-lg border border-input bg-background p-3">
@@ -613,7 +628,7 @@ const WaferDiffView: React.FC = () => {
                 <div className="mt-1 text-2xl font-semibold text-foreground">{sameRate}</div>
               </div>
               <div className="rounded-lg border border-input bg-background p-3">
-                <div className="text-xs text-muted-foreground">一致 / 差异</div>
+                <div className="text-xs text-muted-foreground">一致 / Gap</div>
                 <div className="mt-1 flex items-center gap-2 text-sm">
                   <span className="text-foreground">{visibleMap.passCount}</span>
                   <span className="text-muted-foreground">/</span>
@@ -621,7 +636,7 @@ const WaferDiffView: React.FC = () => {
                 </div>
               </div>
               <div className="rounded-lg border border-input bg-background p-3">
-                <div className="mb-2 text-xs text-muted-foreground">差异点坐标</div>
+                <div className="mb-2 text-xs text-muted-foreground">Gap 点坐标</div>
                 <div className="mb-2 text-sm text-foreground">{visibleDiffPoints.length} 个</div>
                 <Button
                   variant="outline"
@@ -630,14 +645,14 @@ const WaferDiffView: React.FC = () => {
                   onClick={handleExportDiffPoints}
                   disabled={visibleDiffPoints.length === 0}
                 >
-                  下载差异坐标
+                  下载 Gap 坐标
                 </Button>
                 <div className="mt-2 text-[11px] text-muted-foreground">
                   X/Y 为矩阵坐标（从左上角 1 开始）；dX/dY 为相对 wafer 中心偏移（mm，Y 正方向向上）。
                 </div>
                 <div className="hide-scrollbar mt-2 max-h-44 overflow-auto rounded-md border border-input bg-card p-2 text-xs">
                   {visibleDiffPoints.length === 0 ? (
-                    <div className="text-muted-foreground">无差异点</div>
+                    <div className="text-muted-foreground">无 Gap 点</div>
                   ) : (
                     visibleDiffPoints.slice(0, 20).map((item) => (
                       <div
@@ -687,7 +702,9 @@ const WaferDiffView: React.FC = () => {
               复制路径
             </Button>
             <DialogClose asChild>
-              <Button>我知道了</Button>
+              <Button className="border border-chart-2/30 bg-chart-2 text-white hover:bg-chart-2/90">
+                我知道了
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
