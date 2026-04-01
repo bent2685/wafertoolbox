@@ -39,7 +39,7 @@ export const MainLayout = () => {
   const [password, setPassword] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [authError, setAuthError] = useState("");
-  const { resolvedTheme } = useTheme();
+  const { theme } = useTheme();
 
   useEffect(() => {
     Environment().then((env) => {
@@ -55,12 +55,14 @@ export const MainLayout = () => {
     });
   }, []);
 
-  // Sync native window appearance with frontend theme
+  // Sync native window appearance with frontend theme.
+  // We pass the raw `theme` ("system" | "light" | "dark") so that Go can
+  // both apply the native appearance and persist the preference for next launch.
   useEffect(() => {
-    if (resolvedTheme) {
-      SetAppearance(resolvedTheme);
+    if (theme) {
+      SetAppearance(theme);
     }
-  }, [resolvedTheme]);
+  }, [theme]);
 
   return (
     <AppTitleProvider>
@@ -69,8 +71,10 @@ export const MainLayout = () => {
       >
         {/* Sidebar */}
         <aside
-          className={`flex h-full w-52 flex-col text-sidebar-foreground select-none ${
-            isWindows ? "border-r border-sidebar-border bg-sidebar" : "bg-red"
+          className={`flex h-full w-52 flex-col text-sidebar-foreground select-none relative z-10 ${
+            isWindows
+              ? "border-r border-sidebar-border bg-sidebar"
+              : "bg-transparent"
           }`}
         >
           {/* Header with Navigation Buttons */}
@@ -93,13 +97,16 @@ export const MainLayout = () => {
         </main>
 
         {!isUnlocked && (
-          <div className="absolute inset-0 z-[120] flex items-center justify-center bg-background/90 backdrop-blur-sm">
-            <div className="w-full max-w-sm rounded-xl border border-border bg-card p-5 shadow-lg">
-              <div className="mb-3 text-lg font-semibold text-foreground">
-                登录验证
+          <div className="absolute inset-0 z-[120] flex items-center justify-center bg-background/50 backdrop-blur-md transition-all duration-500">
+            {/* Ambient background glow for login */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none animate-glow" />
+            
+            <div className="w-full max-w-sm rounded-2xl glass-border bg-card/60 p-8 shadow-2xl backdrop-blur-xl animate-fade-in-up flex flex-col items-center">
+              <div className="mb-2 text-2xl font-semibold tracking-tight text-foreground bg-clip-text">
+                验证身份
               </div>
-              <div className="mb-3 text-sm text-muted-foreground">
-                请输入访问密码继续使用系统
+              <div className="mb-6 text-sm text-muted-foreground text-center">
+                请输入访问密码以继续使用系统
               </div>
               <form
                 onSubmit={(event) => {
@@ -111,19 +118,22 @@ export const MainLayout = () => {
                   }
                   setAuthError("密码错误");
                 }}
-                className="space-y-3"
+                className="w-full space-y-4"
               >
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="请输入密码"
-                  autoFocus
-                />
-                {authError && (
-                  <div className="text-xs text-destructive">{authError}</div>
-                )}
-                <Button type="submit" className="w-full">
+                <div className="space-y-1">
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="请输入密码"
+                    autoFocus
+                    className="h-10 transition-all duration-300 focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-ring"
+                  />
+                  {authError && (
+                    <div className="text-xs text-destructive mt-1 animate-fade-in-up">{authError}</div>
+                  )}
+                </div>
+                <Button type="submit" className="w-full h-10 hover-lift">
                   进入系统
                 </Button>
               </form>
