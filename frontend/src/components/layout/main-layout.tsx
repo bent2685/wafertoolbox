@@ -6,6 +6,8 @@ import { SetAppearance } from "@wailsjs/go/main/App";
 import { AppTitleProvider } from "./app-title-context";
 import { BaseSidebar } from "./sidebar-content/base-sidebar";
 import { TitleBar } from "./title-bar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const SidebarHeader = () => {
   const [isMac, setIsMac] = useState(false);
@@ -18,7 +20,7 @@ const SidebarHeader = () => {
 
   return (
     <div
-      className={`z-100 shrink-0 border-b border-sidebar-border/80 px-3 pb-3 ${isMac ? "mt-8" : "mt-3"} flex items-center justify-between`}
+      className={`z-100 shrink-0 px-3 pb-3 ${isMac ? "mt-8" : "mt-3"} flex items-center justify-between`}
     >
       <div className="flex items-center gap-2">
         <span className="iconify lucide--tool-case h-5 w-5 text-primary" />
@@ -64,7 +66,7 @@ export const MainLayout = () => {
 
   return (
     <AppTitleProvider>
-      <div className="relative flex h-screen w-screen bg-background">
+      <div className="relative flex h-screen w-screen bg-transparent">
         {/* Sidebar */}
         <aside
           className={`flex h-full w-52 flex-col text-sidebar-foreground select-none relative z-10 ${
