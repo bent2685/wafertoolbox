@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "@tanstack/react-router";
+import { isMatch, Outlet } from "@tanstack/react-router";
 import { useTheme } from "next-themes";
 import { Environment } from "@wailsjs/runtime/runtime";
 import { SetAppearance } from "@wailsjs/go/main/App";
@@ -8,6 +8,7 @@ import { BaseSidebar } from "./sidebar-content/base-sidebar";
 import { TitleBar } from "./title-bar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const SidebarHeader = () => {
   const [isMac, setIsMac] = useState(false);
@@ -39,6 +40,14 @@ export const MainLayout = () => {
   const [password, setPassword] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    Environment().then((env) => {
+      setIsMac(env.platform === "darwin");
+    });
+  }, []);
+
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -83,12 +92,19 @@ export const MainLayout = () => {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-hidden bg-background">
-          <div className="flex h-full flex-col overflow-hidden">
-            <TitleBar />
-            <section className="min-h-0 flex-1 overflow-auto bg-muted/30">
-              <Outlet />
-            </section>
+        <main className={cn("flex-1 flex flex-col", isMac ? "p-1.5" : "")}>
+          <div
+            className={cn(
+              "flex-1 overflow-hidden bg-background",
+              isMac ? "rounded-2xl border-accent-foreground/20" : "",
+            )}
+          >
+            <div className="flex h-full flex-col overflow-hidden">
+              <TitleBar />
+              <section className="min-h-0 flex-1 overflow-auto bg-muted/30">
+                <Outlet />
+              </section>
+            </div>
           </div>
         </main>
 
@@ -96,7 +112,7 @@ export const MainLayout = () => {
           <div className="absolute inset-0 z-[120] flex items-center justify-center bg-background/50 backdrop-blur-md transition-all duration-500">
             {/* Ambient background glow for login */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none animate-glow" />
-            
+
             <div className="w-full max-w-sm rounded-2xl glass-border bg-card/60 p-8 shadow-2xl backdrop-blur-xl animate-fade-in-up flex flex-col items-center">
               <div className="mb-2 text-2xl font-semibold tracking-tight text-foreground bg-clip-text">
                 验证身份
@@ -126,7 +142,9 @@ export const MainLayout = () => {
                     className="h-10 transition-all duration-300 focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-ring"
                   />
                   {authError && (
-                    <div className="text-xs text-destructive mt-1 animate-fade-in-up">{authError}</div>
+                    <div className="text-xs text-destructive mt-1 animate-fade-in-up">
+                      {authError}
+                    </div>
                   )}
                 </div>
                 <Button type="submit" className="w-full h-10 hover-lift">
